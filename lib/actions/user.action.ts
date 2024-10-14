@@ -4,7 +4,7 @@ import { IUser } from "@/types/users";
 import httpInstance from "../axios";
 import { revalidatePath } from "next/cache";
 
-export let getUsers = () => {
+export const getUsers = () => {
   return httpInstance
     .get(`/users`)
     .then(function (response) {
@@ -22,7 +22,7 @@ export let getUsers = () => {
     });
 };
 
-export let changeUserStatus = async (user: IUser) => {
+export const changeUserStatus = async (user: IUser) => {
   try {
     // Обновляем пользователя
     await httpInstance.put(`/users/${user.id}`, user);
