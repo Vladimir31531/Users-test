@@ -11,14 +11,15 @@ import {
   TableBody,
   Button,
   Box,
+  CircularProgress,
+  Backdrop,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Status from "./Status";
-import { usePathname, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import qs from "query-string";
 import useFilters from "../model/useFilters";
 import { changeUserStatus } from "@/lib/actions/user.action";
-import axios from "axios";
 
 const tableTitles = ["Имя", "Login", "Группа", "Статус", "Действия"];
 
@@ -26,15 +27,19 @@ export default function MyTable({ users }: { users: IUser[] }) {
   const search = useSearchParams();
   const searchQuery = search.get("search");
 
-  const [FUsers, setFUsers] = useState<IUser[]>([]);
+  const [FUsers, setFUsers] = useState<{ loading: boolean; data: IUser[] }>({
+    loading: true,
+    data: [],
+  });
 
   useEffect(() => {
+    setFUsers({ ...FUsers, loading: true });
     const filterParams = qs.parse(search.toString());
     delete filterParams.search;
 
     const { filteredUsers } = useFilters({ users, searchQuery, filterParams });
 
-    setFUsers(filteredUsers);
+    setFUsers({ loading: false, data: filteredUsers });
   }, [search, users]);
 
   const handleOnOffUser = async (user: IUser) => {
@@ -66,37 +71,48 @@ export default function MyTable({ users }: { users: IUser[] }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {/* Добавить условие когда нет юзеров и добавить элемент "Не найдено" */}
-          {FUsers.length > 0 ? (
-            FUsers.map((row: IUser) => (
-              <TableRow
-                key={row.id}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {row.name}
-                </TableCell>
-                <TableCell align="right">{row.login}</TableCell>
-                <TableCell align="right">{row.group}</TableCell>
-                <TableCell align="right">
-                  <Status isActive={row.active} />
-                </TableCell>
-                <TableCell align="right">
-                  <Button
-                    variant="contained"
-                    sx={{ backgroundColor: "#aaaaaa" }}
-                    onClick={() => handleOnOffUser(row)}
-                  >
-                    {row.active ? "Выключить" : "Включить"}
-                  </Button>
-                </TableCell>
+          {!FUsers.loading ? (
+            FUsers.data.length > 0 ? (
+              FUsers.data.map((row: IUser) => (
+                <TableRow
+                  key={row.id}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    {row.name}
+                  </TableCell>
+                  <TableCell align="right">{row.login}</TableCell>
+                  <TableCell align="right">{row.group}</TableCell>
+                  <TableCell align="right">
+                    <Status isActive={row.active} />
+                  </TableCell>
+                  <TableCell align="right">
+                    <Button
+                      variant="contained"
+                      sx={{ backgroundColor: "#aaaaaa" }}
+                      onClick={() => handleOnOffUser(row)}
+                    >
+                      {row.active ? "Выключить" : "Включить"}
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell component="th" scope="row"></TableCell>
+                <TableCell align="right"></TableCell>
+                <TableCell align="right">Ничего нет</TableCell>
+                <TableCell align="right"></TableCell>
+                <TableCell align="right"></TableCell>
               </TableRow>
-            ))
+            )
           ) : (
-            <TableRow sx={{}}>
+            <TableRow>
               <TableCell component="th" scope="row"></TableCell>
               <TableCell align="right"></TableCell>
-              <TableCell align="right">Ничего нет</TableCell>
+              <TableCell align="right">
+                <CircularProgress color="primary" />
+              </TableCell>
               <TableCell align="right"></TableCell>
               <TableCell align="right"></TableCell>
             </TableRow>
