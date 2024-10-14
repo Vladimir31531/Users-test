@@ -1,5 +1,4 @@
 import { Users } from "@/modules/Users";
-import { SearchParamsProps } from "@/types/users";
 
 export default function Home() {
   return (
