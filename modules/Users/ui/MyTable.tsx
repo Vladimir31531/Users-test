@@ -18,6 +18,7 @@ import useFilters from "../model/useFilters";
 import { handleOnOffUser } from "../model/handlersMyTable";
 import { tableTitles } from "../constants";
 import { TableCellHeadStyles, TableCellStyles } from "../Mui_styles";
+import MyButton from "./MyButton";
 
 export default function MyTable({ users }: { users: IUser[] }) {
   const { loading, data } = useFilters(users);
@@ -61,13 +62,7 @@ export default function MyTable({ users }: { users: IUser[] }) {
                     <Status isActive={row.active} />
                   </TableCell>
                   <TableCell sx={TableCellStyles} align="right">
-                    <Button
-                      variant="contained"
-                      sx={{ backgroundColor: "#aaaaaa" }}
-                      onClick={() => handleOnOffUser(row)}
-                    >
-                      {row.active ? "Выключить" : "Включить"}
-                    </Button>
+                    <MyButton row={row} />
                   </TableCell>
                 </TableRow>
               ))
@@ -85,7 +80,7 @@ export default function MyTable({ users }: { users: IUser[] }) {
               <TableCell component="th" scope="row"></TableCell>
               <TableCell align="right"></TableCell>
               <TableCell align="right">
-                <CircularProgress color="primary" />
+                <CircularProgress sx={{ color: "grey.500" }} />
               </TableCell>
               <TableCell align="right"></TableCell>
               <TableCell align="right"></TableCell>
