@@ -11,59 +11,16 @@ import {
   TableBody,
   Button,
   CircularProgress,
-  Theme,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Status from "./Status";
-import { useSearchParams } from "next/navigation";
-import qs from "query-string";
 import useFilters from "../model/useFilters";
-import { changeUserStatus } from "@/lib/actions/user.action";
-
-const tableTitles = ["Имя", "Login", "Группа", "Статус", "Действия"];
-
-
-
-const TableCellHeadStyles = (theme: Theme) => ({
-  fontWeight: "bold",
-  [theme.breakpoints.down(690)]: {
-    padding: "5px 10px",
-  },
-});
-const TableCellStyles = (theme: Theme) => ({
-  [theme.breakpoints.down(690)]: {
-    padding: "5px 10px",
-  },
-});
+import { handleOnOffUser } from "../model/handlersMyTable";
+import { tableTitles } from "../constants";
+import { TableCellHeadStyles, TableCellStyles } from "../Mui_styles";
 
 export default function MyTable({ users }: { users: IUser[] }) {
-  const search = useSearchParams();
-  const searchQuery = search.get("search");
-
-  const [FUsers, setFUsers] = useState<{ loading: boolean; data: IUser[] }>({
-    loading: true,
-    data: [],
-  });
-
-  useEffect(() => {
-    setFUsers({ ...FUsers, loading: true });
-    const filterParams = qs.parse(search.toString());
-    delete filterParams.search;
-
-    const { filteredUsers } = useFilters({ users, searchQuery, filterParams });
-
-    setFUsers({ loading: false, data: filteredUsers });
-  }, [search, users]);
-
-  const handleOnOffUser = async (user: IUser) => {
-    try {
-      const updatedUser = { ...user, active: !user.active };
-
-      const res = await changeUserStatus(updatedUser);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const { loading, data } = useFilters(users);
 
   return (
     <TableContainer component={Paper}>
@@ -84,9 +41,9 @@ export default function MyTable({ users }: { users: IUser[] }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {!FUsers.loading ? (
-            FUsers.data.length > 0 ? (
-              FUsers.data.map((row: IUser) => (
+          {!loading ? (
+            data.length > 0 ? (
+              data.map((row: IUser) => (
                 <TableRow
                   key={row.id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
