@@ -1,4 +1,7 @@
 import { IUser } from "@/types/users";
+import { useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
+import qs from "query-string";
 
 function filterUsers(
   users: IUser[],
@@ -25,19 +28,30 @@ function searchUsers(users: IUser[], search: string | null): IUser[] {
   );
 }
 
-export default function useFilters({
-  users,
-  searchQuery,
-  filterParams,
-}: {
-  users: IUser[];
-  searchQuery: string | null;
-  filterParams: { [key: string]: string | (string | null)[] | null };
-}): { filteredUsers: IUser[] } {
-  const filteredUsers = filterUsers(
-    searchUsers(users, searchQuery),
-    filterParams
-  );
+export default function useFilters(users: IUser[]): {
+  loading: boolean;
+  data: IUser[];
+} {
+  const search = useSearchParams();
+  const searchQuery = search.get("search");
 
-  return { filteredUsers };
+  const [FUsers, setFUsers] = useState<{ loading: boolean; data: IUser[] }>({
+    loading: true,
+    data: [],
+  });
+
+  useEffect(() => {
+    setFUsers({ ...FUsers, loading: true });
+    const filterParams = qs.parse(search.toString());
+    delete filterParams.search;
+
+    const filteredUsers = filterUsers(
+      searchUsers(users, searchQuery),
+      filterParams
+    );
+
+    setFUsers({ loading: false, data: filteredUsers });
+  }, [search, users]);
+
+  return FUsers;
 }
