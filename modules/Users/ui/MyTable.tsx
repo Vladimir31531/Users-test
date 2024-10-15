@@ -10,9 +10,8 @@ import {
   TableCell,
   TableBody,
   Button,
-  Box,
   CircularProgress,
-  Backdrop,
+  Theme,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Status from "./Status";
@@ -22,6 +21,20 @@ import useFilters from "../model/useFilters";
 import { changeUserStatus } from "@/lib/actions/user.action";
 
 const tableTitles = ["Имя", "Login", "Группа", "Статус", "Действия"];
+
+
+
+const TableCellHeadStyles = (theme: Theme) => ({
+  fontWeight: "bold",
+  [theme.breakpoints.down(690)]: {
+    padding: "5px 10px",
+  },
+});
+const TableCellStyles = (theme: Theme) => ({
+  [theme.breakpoints.down(690)]: {
+    padding: "5px 10px",
+  },
+});
 
 export default function MyTable({ users }: { users: IUser[] }) {
   const search = useSearchParams();
@@ -61,7 +74,7 @@ export default function MyTable({ users }: { users: IUser[] }) {
               return (
                 <TableCell
                   key={title}
-                  sx={{ fontWeight: "bold" }}
+                  sx={TableCellHeadStyles}
                   align={i === 0 ? undefined : "right"}
                 >
                   {title}
@@ -78,15 +91,19 @@ export default function MyTable({ users }: { users: IUser[] }) {
                   key={row.id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
-                  <TableCell component="th" scope="row">
+                  <TableCell sx={TableCellStyles} component="th" scope="row">
                     {row.name}
                   </TableCell>
-                  <TableCell align="right">{row.login}</TableCell>
-                  <TableCell align="right">{row.group}</TableCell>
-                  <TableCell align="right">
+                  <TableCell sx={TableCellStyles} align="right">
+                    {row.login}
+                  </TableCell>
+                  <TableCell sx={TableCellStyles} align="right">
+                    {row.group}
+                  </TableCell>
+                  <TableCell sx={TableCellStyles} align="right">
                     <Status isActive={row.active} />
                   </TableCell>
-                  <TableCell align="right">
+                  <TableCell sx={TableCellStyles} align="right">
                     <Button
                       variant="contained"
                       sx={{ backgroundColor: "#aaaaaa" }}

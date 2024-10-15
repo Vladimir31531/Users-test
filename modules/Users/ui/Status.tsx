@@ -16,6 +16,7 @@ export default function Status({ isActive }: { isActive: boolean }) {
         borderRadius: "5px",
         backgroundColor: "red",
         color: "white",
+        whiteSpace: "nowrap",
         ...(isActive ? activeStyles : {}),
       }}
     >
